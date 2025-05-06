@@ -1,9 +1,20 @@
 import React, { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
+import useChat from "./hooks/useChat";
+
+type Room = {
+
+}
 
 const App: React.FC = () => {
+  const location = useLocation();
+  const { user } = location.state || {};
+
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [messages, setMessages] = useState<string[]>([]);
   const [input, setInput] = useState("");
+  const [rooms, setRooms] = useState<Room[]>([]);
+  const GetUserRooms = useChat(setRooms);
 
   useEffect(() => {
     const ws = new WebSocket("ws://localhost:4000");
@@ -17,6 +28,11 @@ const App: React.FC = () => {
     return () => ws.close();
   }, []);
 
+  useEffect(()=>{
+    getRooms();
+    console.log("ROOMS", rooms);
+  }, [user]);
+
   const sendMessage = async () => {
     if (!input) return;
     await fetch("http://localhost:4000/api/message", {
@@ -27,17 +43,30 @@ const App: React.FC = () => {
     setInput("");
   };
 
+  const getRooms = async () => {
+    await GetUserRooms(user.id);
+  }
+
+
+
   return (
-    <div>
-      <h1>Chat REST → WebSocket</h1>
-      <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Escribe un mensaje" />
-      <button onClick={sendMessage}>Enviar</button>
+    <div style={{display:"flex"}}>
       <div>
-        {messages.map((msg, i) => (
-          <p key={i}>{msg}</p>
-        ))}
+        Prueba
+
+      </div>
+      <div>
+        <h1>Chat REST → WebSocket</h1>
+        <input value={input} onChange={(e) => setInput(e.target.value)} placeholder="Escribe un mensaje" />
+        <button onClick={sendMessage}>Enviar</button>
+        <div>
+          {messages.map((msg, i) => (
+            <p key={i}>{msg}</p>
+          ))}
+        </div>
       </div>
     </div>
+    
   );
 };
 

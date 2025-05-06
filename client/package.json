@@ -12,7 +12,9 @@
   "dependencies": {
     "axios": "^1.9.0",
     "react": "^19.2.0-canary-f7396427-20250501",
-    "react-dom": "^19.2.0-canary-f7396427-20250501"
+    "react-dom": "^19.2.0-canary-f7396427-20250501",
+    "react-router-dom": "^7.5.3",
+    "router": "^2.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
