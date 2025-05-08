@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import useChat from "./hooks/useChat";
+import "./App.css"; // Agrega los estilos personalizados
 
 type Room = {
   id: string;
@@ -29,10 +30,11 @@ const App: React.FC = () => {
     if (user?.id) {
       GetUserRooms(user.id);
     }
+    console.log("USER", user);
   }, [user]);
 
   useEffect(() => {
-    console.log("ROOMS", rooms)
+    console.log("ROOMS", rooms);
   }, [rooms]);
 
   const sendMessage = async () => {
@@ -46,30 +48,46 @@ const App: React.FC = () => {
   };
 
   return (
-    <div style={{ display: "flex", gap: "2rem", padding: "1rem" }}>
-      <div>
-        <h3>Salas:</h3>
-        <ul>
-          {rooms.map((room) => (
-            <li key={room.id}>{room.name}</li>
-          ))}
-        </ul>
-      </div>
-      <div>
-        <h1>Chat REST → WebSocket</h1>
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Escribe un mensaje"
-        />
-        <button onClick={sendMessage}>Enviar</button>
-        <div>
-          {messages.map((msg, i) => (
-            <p key={i}>{msg}</p>
-          ))}
+    <>
+      <div className="rooms-header">
+          <h1>
+            ¡Bienvenid@, esta es tu página de chats!
+          </h1>
+        </div>
+      <div className="app-container">
+        <div className="rooms-sidebar">
+          <h3>Salas</h3>
+          <ul>
+            {rooms.map((room) => (
+              <button key={room.id} >
+                {room.name}
+              </button>
+            ))}
+          </ul>
+        </div>
+        <div className="chat-main">
+          <h1>Chat REST → WebSocket</h1>
+          <div className="chat-box">
+            <div className="messages-container">
+              {messages.map((msg, i) => (
+                <p key={i} className="message">{msg}</p>
+              ))}
+            </div>
+            <div className="input-area">
+              <input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Escribe un mensaje..."
+                className="message-input"
+              />
+              <button onClick={sendMessage} className="send-button">
+                Enviar
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 

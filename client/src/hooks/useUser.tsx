@@ -6,7 +6,7 @@ export default function useUser(setUser: any) {
       const response = await axios.post("http://localhost:4000/api/login", { email });
 
       if (response.data.success) {
-        const user = { id: response.data.userId, email };
+        const user = { id: response.data.userId, email, name: response.data.userName };
         setUser(user);
         return user;
       } else {
