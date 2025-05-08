@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 import useChat from "./hooks/useChat";
+import useMessages from "./hooks/useMessages";
 
 type Room = {
   id: string;
@@ -10,20 +11,27 @@ type Room = {
 const App: React.FC = () => {
   const location = useLocation();
   const { user } = location.state || {};
+  const { messages: roomMessages, loadMessages } = useMessages();
 
   const [socket, setSocket] = useState<WebSocket | null>(null);
-  const [messages, setMessages] = useState<string[]>([]);
   const [input, setInput] = useState("");
   const [rooms, setRooms] = useState<Room[]>([]);
+  const [activeRoomId, setActiveRoomId] = useState<string | null>(null);
+
   const GetUserRooms = useChat(setRooms);
 
   useEffect(() => {
     const ws = new WebSocket("ws://localhost:4000");
     ws.onopen = () => console.log("Conectado al WebSocket");
-    ws.onmessage = (event) => setMessages((prev) => [...prev, event.data]);
+    ws.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.salaId === activeRoomId) {
+        loadMessages(data.salaId); // recarga mensajes de la sala activa
+      }
+    };
     setSocket(ws);
     return () => ws.close();
-  }, []);
+  }, [activeRoomId]);
 
   useEffect(() => {
     if (user?.id) {
@@ -31,16 +39,21 @@ const App: React.FC = () => {
     }
   }, [user]);
 
-  useEffect(() => {
-    console.log("ROOMS", rooms)
-  }, [rooms]);
+  const handleLoadMessages = async (roomId: string) => {
+    setActiveRoomId(roomId);
+    await loadMessages(roomId);
+  };
 
   const sendMessage = async () => {
-    if (!input) return;
+    if (!input || !activeRoomId) return;
     await fetch("http://localhost:4000/api/message", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ message: input }),
+      body: JSON.stringify({
+        contenido: input,
+        salaId: activeRoomId,
+        emisorId: user.id,
+      }),
     });
     setInput("");
   };
@@ -51,7 +64,9 @@ const App: React.FC = () => {
         <h3>Salas:</h3>
         <ul>
           {rooms.map((room) => (
-            <li key={room.id}>{room.name}</li>
+            <li key={room.id}>
+              <button onClick={() => handleLoadMessages(room.id)}>{room.name}</button>
+            </li>
           ))}
         </ul>
       </div>
@@ -64,8 +79,10 @@ const App: React.FC = () => {
         />
         <button onClick={sendMessage}>Enviar</button>
         <div>
-          {messages.map((msg, i) => (
-            <p key={i}>{msg}</p>
+          {roomMessages.map((msg, i) => (
+            <p key={i}>
+              <strong>{msg.emisorId}:</strong> {msg.contenido}
+            </p>
           ))}
         </div>
       </div>
