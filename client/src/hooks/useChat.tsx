@@ -1,22 +1,19 @@
-import axios from 'axios';
-
-export default function useChat(setRooms:any) {
-  async function GetUserRooms(userId: string) {
+export default function useChat(setRooms: (rooms: any[]) => void) {
+  return async (userId: string) => {
     try {
-      const response = await axios.get(`http://localhost:4000/api/getRooms?userId=${userId}`);
+      const res = await fetch(`http://localhost:4000/api/getRooms?userId=${userId}`);
+      const data = await res.json();
+      console.log("Respuesta de salas:", data); // Log de depuración
 
-      console.log("DATA", response.data);
-
-      if (response.data.success) {
-        console.log("Usuario encontrado:", response.data.rooms);
-        setRooms(response.data.rooms);
+      if (data.success && Array.isArray(data.rooms)) {
+        setRooms(data.rooms);
       } else {
-        console.log("Error:", response.data.error);
+        setRooms([]); // asegurarse de que rooms siempre sea un array
+        console.warn("Respuesta inesperada del servidor:", data);
       }
     } catch (error) {
-      console.error("Error al hacer login:", error);
+      console.error("Error al obtener salas:", error);
+      setRooms([]); // asegurarse de que rooms siempre sea un array
     }
-  }
-
-  return GetUserRooms;
+  };
 }

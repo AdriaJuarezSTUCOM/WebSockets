@@ -4,26 +4,22 @@ import { useNavigate } from "react-router-dom";
 
 export default function LoginPage() {
   const navigate = useNavigate();
-
-  const [socket, setSocket] = useState<WebSocket | null>(null);
   const [email, setEmail] = useState<string>("");
-  const [user, setUser] = useState<any[]>([]);
+  const [user, setUser] = useState<any>(null);
   const [error, setError] = useState<string>("");
 
-  
   const Login = useUser(setUser);
 
   useEffect(() => {
     const ws = new WebSocket("ws://localhost:4000");
     ws.onopen = () => console.log("Conectado al WebSocket");
-    setSocket(ws);
     return () => ws.close();
   }, []);
 
   async function checkLogin(email: string) {
-    await Login(email);
-    if (user) {
-      navigate("/app", { state: { user } });
+    const loggedUser = await Login(email);
+    if (loggedUser) {
+      navigate("/app", { state: { user: loggedUser } });
     } else {
       setError("User does not exist");
     }

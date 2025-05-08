@@ -1,22 +1,21 @@
 import axios from 'axios';
 
-export default function useUser(setUser:any) {
+export default function useUser(setUser: any) {
   async function Login(email: string) {
     try {
       const response = await axios.post("http://localhost:4000/api/login", { email });
 
-      console.log("DATA", response.data);
-
       if (response.data.success) {
-        console.log("Usuario encontrado:", response.data.usuario);
-        setUser(response.data.usuario);
+        const user = { id: response.data.userId, email };
+        setUser(user);
+        return user;
       } else {
         console.log("Error:", response.data.error);
-        return false;
+        return null;
       }
     } catch (error) {
       console.error("Error al hacer login:", error);
-      return false;
+      return null;
     }
   }
 
