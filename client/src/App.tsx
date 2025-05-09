@@ -6,6 +6,8 @@ import "./App.css"; // Agrega los estilos personalizados
 type Room = {
   id: string;
   name: string;
+  type: string;
+  users: string[];
 };
 
 const App: React.FC = () => {
@@ -51,7 +53,7 @@ const App: React.FC = () => {
     <>
       <div className="rooms-header">
           <h1>
-            ¡Bienvenid@, esta es tu página de chats!
+            ¡Bienvenid@ {user.name}, esta es tu página de chats!
           </h1>
         </div>
       <div className="app-container">
@@ -66,7 +68,7 @@ const App: React.FC = () => {
           </ul>
         </div>
         <div className="chat-main">
-          <h1>Chat REST → WebSocket</h1>
+          <h1>Chat entre NOMBRES</h1>
           <div className="chat-box">
             <div className="messages-container">
               {messages.map((msg, i) => (
