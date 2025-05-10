@@ -135,7 +135,7 @@ const App: React.FC = () => {
         {currentRoom? 
           <>
             <div className="chat-main">
-                <h1>Chat entre {currentRoom.users.map((user) => user).join(", ")}</h1>
+                <h1>{currentRoom.name}</h1>
                 <div className="chat-box">
                   <div className="messages-container">
                     {roomMessages.map((msg, i) => (
