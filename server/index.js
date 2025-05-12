@@ -16,6 +16,21 @@ app.use(express.json());
 const server = http.createServer(app);
 const wss = new WebSocket.Server({ server });
 
+const fs = require("fs");
+const path = require("path");
+
+const dataPath = path.join(__dirname, "./private/data.json");
+
+function readData() {
+  const jsonData = fs.readFileSync(dataPath, "utf-8");
+  return JSON.parse(jsonData);
+}
+
+function writeData(data) {
+  fs.writeFileSync(dataPath, JSON.stringify(data, null, 2), "utf-8");
+}
+
+
 wss.on("connection", (ws) => {
   console.log("Cliente conectado");
   ws.on("close", () => {
@@ -40,15 +55,18 @@ app.post("/api/message", (req, res) => {
   if (!message) return res.status(400).json({ error: "Mensaje vacío" });
   if (!roomId) return res.status(400).json({ error: "No hay sala" });
 
+  const data = readData();
+
   const msgObj = {
     id: crypto.randomUUID(),
     salaId: roomId,
     emisorId: userId,
     contenido: message,
-    timestamp: new Date(),
+    timestamp: new Date().toISOString(),
   };
 
-  mensajes.push(msgObj); 
+  data.mensajes.push(msgObj);
+  writeData(data); // Guardamos en disco
 
   const formattedMessage = {
     id: msgObj.id,
@@ -58,15 +76,15 @@ app.post("/api/message", (req, res) => {
     timestamp: msgObj.timestamp,
   };
 
+  // Enviar a todos los clientes conectados
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
-      client.send(JSON.stringify(formattedMessage)); 
+      client.send(JSON.stringify(formattedMessage));
     }
   });
 
   res.json({ sent: true });
 });
-
 
 app.get("/api/getRooms", (req, res) => {
   const userId = req.query.userId;
