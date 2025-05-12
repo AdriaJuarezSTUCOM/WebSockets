@@ -38,6 +38,7 @@ const App: React.FC = () => {
   const [currentRoom, setCurrentRoom] = useState<Room>();
   const [roomMessages, setRoomMessages] = useState<Message[]>([]);
   const [roomDocuments, setRoomDocuments] = useState<Document[]>([]);
+  const [documentOpen, setDocumentOpen] = useState<boolean>(false);
 
   const GetUserRooms = useChat(setRooms);
   const GetRoomMessages = useMessage(setRoomMessages);
@@ -165,7 +166,7 @@ const App: React.FC = () => {
                 <div className="documents-container">
                   {roomDocuments.map((document, i) => (
                     <>
-                      <button key={i} className="rooms-sidebar-button">{document.title}</button>
+                      <button onClick={()=>setDocumentOpen(true)} key={i} className="rooms-sidebar-button">{document.title}</button>
                       <p className="message-time">{new Date(document.lastModified).toLocaleString()}</p>
                     </>
                   ))}
@@ -177,7 +178,7 @@ const App: React.FC = () => {
             </div>
           </>
           :
-          <div className="chat-main">
+          <div className="chat-empty">
             <h1 style={{justifyContent:"middle"}}>No hay ningún chat seleccionado</h1>
           </div>}
       </div>

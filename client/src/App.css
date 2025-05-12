@@ -83,6 +83,14 @@ body {
   width: 950px;
 }
 
+.chat-empty {
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 10px;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+  width: 1720px;
+}
+
 .chat-documents {
   background-color: #fff;
   padding: 20px;
@@ -91,7 +99,7 @@ body {
   width: 700px;
 }
 
-.chat-documents h1, .chat-main h1 {
+.chat-documents h1, .chat-main h1, .chat-empty h1 {
   font-size: 2rem;
   color: #333;
   margin-bottom: 20px;
