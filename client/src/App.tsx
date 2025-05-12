@@ -113,6 +113,28 @@ const App: React.FC = () => {
     GetRoomDocuments(roomId);
   }
 
+  const exportChat = async () => {
+    if (!roomMessages || roomMessages.length === 0) {
+      alert("No hay mensajes para exportar.");
+      return;
+    }
+
+    const fileName = `chat-${currentRoomRef.current?.id || "sala"}.json`;
+    const json = JSON.stringify(roomMessages, null, 2);
+
+    const blob = new Blob([json], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = fileName;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+
 
   return (
     <>
@@ -136,29 +158,32 @@ const App: React.FC = () => {
         {currentRoom? 
           <>
             <div className="chat-main">
+              <div className="chat-title-row">
                 <h1>{currentRoom.name}</h1>
-                <div className="chat-box">
-                  <div className="messages-container">
-                    {roomMessages.map((msg, i) => (
-                      <>
-                        <p className="message-sender">{msg.userId}</p>
-                        <p key={i} className="message">{msg.content}</p>
-                        <p className="message-time">{new Date(msg.timestamp).toLocaleString()}</p>
-                      </>
-                    ))}
-                  </div>
-                  <div className="input-area">
-                    <input
-                      value={input}
-                      onChange={(e) => setInput(e.target.value)}
-                      placeholder="Escribe un mensaje..."
-                      className="message-input"
-                    />
-                    <button onClick={sendMessage} className="send-button">
-                      Enviar
-                    </button>
-                  </div>
+                <button onClick={exportChat} className="export-chat">Exportar chat</button>
+              </div>
+              <div className="chat-box">
+                <div className="messages-container">
+                  {roomMessages.map((msg, i) => (
+                    <>
+                      <p className="message-sender">{msg.userId}</p>
+                      <p key={i} className="message">{msg.content}</p>
+                      <p className="message-time">{new Date(msg.timestamp).toLocaleString()}</p>
+                    </>
+                  ))}
                 </div>
+                <div className="input-area">
+                  <input
+                    value={input}
+                    onChange={(e) => setInput(e.target.value)}
+                    placeholder="Escribe un mensaje..."
+                    className="message-input"
+                  />
+                  <button onClick={sendMessage} className="send-button">
+                    Enviar
+                  </button>
+                </div>
+              </div>
             </div>
             <div className="chat-documents">
               <h1>Documentos</h1>

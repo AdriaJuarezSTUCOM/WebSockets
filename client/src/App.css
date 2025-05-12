@@ -99,7 +99,19 @@ body {
   width: 700px;
 }
 
-.chat-documents h1, .chat-main h1, .chat-empty h1 {
+.chat-title-row{
+  display: flex;
+  justify-content: space-between;
+}
+
+.chat-main h1, .chat-documents h1{
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: start;
+}
+
+.chat-empty h1 {
   font-size: 2rem;
   color: #333;
   margin-bottom: 20px;
@@ -110,6 +122,13 @@ body {
   display: flex;
   flex-direction: column;
   height: 90%;
+}
+
+.export-chat{
+  font-size: 1rem;
+  color: white;
+  margin-bottom: 20px;
+  text-align: start;
 }
 
 .messages-container {
