@@ -68,7 +68,7 @@
       "salaId": "s3",
       "titulo": "Ejercicio Ana-Luis",
       "contenido": "Hola Luis, esta es la primera línea del documento.",
-      "lastModified": "2025-05-13T14:30:11.273Z"
+      "lastModified": "2025-05-13T16:51:34.397Z"
     }
   ],
   "mensajes": [
@@ -107,6 +107,13 @@
       "tipo": "sistema",
       "contenido": "Se ha creado un documento colaborativo para esta sala.",
       "timestamp": "2025-04-20T10:15:00"
+    },
+    {
+      "id": "048dd414-3d2c-420c-80ad-f4188ce90265",
+      "salaId": "s3",
+      "emisorId": "u2",
+      "contenido": "fdsfdsf",
+      "timestamp": "2025-05-13T16:51:17.145Z"
     }
   ]
 }
