@@ -4,6 +4,8 @@ const WebSocket = require("ws");
 const cors = require("cors");
 const salas = require("./private/data.json").salas;
 const usuarios = require("./private/data.json").usuarios;
+const mensajes = require("./private/data.json").mensajes;
+const documentos = require("./private/data.json").documentos;
 
 const app = express();
 const port = 4000;
