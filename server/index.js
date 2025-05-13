@@ -4,8 +4,6 @@ const WebSocket = require("ws");
 const cors = require("cors");
 const salas = require("./private/data.json").salas;
 const usuarios = require("./private/data.json").usuarios;
-const mensajes = require("./private/data.json").mensajes;
-const documentos = require("./private/data.json").documentos;
 
 const app = express();
 const port = 4000;
@@ -66,7 +64,7 @@ app.post("/api/message", (req, res) => {
   };
 
   data.mensajes.push(msgObj);
-  writeData(data); // Guardamos en disco
+  writeData(data);
 
   const formattedMessage = {
     id: msgObj.id,
@@ -76,7 +74,6 @@ app.post("/api/message", (req, res) => {
     timestamp: msgObj.timestamp,
   };
 
-  // Enviar a todos los clientes conectados
   wss.clients.forEach((client) => {
     if (client.readyState === WebSocket.OPEN) {
       client.send(JSON.stringify(formattedMessage));
@@ -112,11 +109,13 @@ app.get("/api/getRooms", (req, res) => {
 app.get("/api/getRoomMessages", (req, res) => {
   const roomId = req.query.roomId;
 
+  const data = readData();
+
   if (!roomId) {
     return res.status(400).json({ success: false, error: "Falta roomId" });
   }
 
-  const roomMessages = mensajes.filter((mensaje) =>
+  const roomMessages = data.mensajes.filter((mensaje) =>
     mensaje.salaId.includes(roomId)
   ).map((mensaje) => ({
     id: mensaje.id,
@@ -125,6 +124,8 @@ app.get("/api/getRoomMessages", (req, res) => {
     content: mensaje.contenido,
     timestamp: mensaje.timestamp
   }));
+
+  console.log("MENSAJES", roomMessages);
 
   if (roomMessages.length === 0) {
     return res.status(404).json({ success: false, error: "No se encontraron mensajes en esta sala" });
@@ -136,11 +137,13 @@ app.get("/api/getRoomMessages", (req, res) => {
 app.get("/api/getRoomDocuments", (req, res) => {
   const roomId = req.query.roomId;
 
+  const data = readData();
+
   if (!roomId) {
     return res.status(400).json({ success: false, error: "Falta roomId" });
   }
 
-  const roomDocuments = documentos.filter((documento) =>
+  const roomDocuments = data.documentos.filter((documento) =>
     documento.salaId.includes(roomId)
   ).map((documento) => ({
     id: documento.id,
@@ -156,6 +159,35 @@ app.get("/api/getRoomDocuments", (req, res) => {
 
   res.json({ success: true, roomDocuments: roomDocuments });
 });
+
+app.put("/api/updateDocument", (req, res) => {
+  const { id, contenido, lastModified } = req.body;
+
+  if (!id || !contenido || !lastModified) {
+    return res.status(400).json({ success: false, error: "Datos incompletos" });
+  }
+
+  try {
+    const data = JSON.parse(fs.readFileSync("./private/data.json", "utf-8"));
+
+    const doc = data.documentos.find((d) => d.id === id);
+    if (!doc) {
+      return res.status(404).json({ success: false, error: "Documento no encontrado" });
+    }
+
+    doc.contenido = contenido;
+    doc.lastModified = lastModified;
+
+    fs.writeFileSync("./private/data.json", JSON.stringify(data, null, 2));
+    console.log("Documento actualizado:", doc);
+
+    res.json({ success: true });
+  } catch (error) {
+    console.error("Error al actualizar documento:", error);
+    res.status(500).json({ success: false, error: "Error interno" });
+  }
+});
+
 
 server.listen(port, () => {
   console.log(`Servidor escuchando en http://localhost:${port}`);
