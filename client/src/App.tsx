@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from "react";
 import { useLocation } from "react-router-dom";
+import Document from "./Components/Document";
 import useChat from "./hooks/useChat";
 import useMessage from "./hooks/useMessage";
 import useDocument from "./hooks/useDocument";
@@ -165,11 +166,11 @@ const App: React.FC = () => {
               <div className="chat-box">
                 <div className="messages-container">
                   {roomMessages.map((msg, i) => (
-                    <>
+                    <div key={i}>
                       <p className="message-sender">{msg.userId}</p>
-                      <p key={i} className="message">{msg.content}</p>
+                      <p className="message">{msg.content}</p>
                       <p className="message-time">{new Date(msg.timestamp).toLocaleString()}</p>
-                    </>
+                    </div>
                   ))}
                 </div>
                 <div className="input-area">
@@ -186,14 +187,29 @@ const App: React.FC = () => {
               </div>
             </div>
             <div className="chat-documents">
-              <h1>Documentos</h1>
+              <div className="chat-documents-title-row">
+                <h1>Documentos</h1>
+                {documentOpen && 
+                  <button onClick={()=>setDocumentOpen(false)}>Volver</button>
+                }
+              </div>
               {roomDocuments.length != 0?
                 <div className="documents-container">
                   {roomDocuments.map((document, i) => (
-                    <>
-                      <button onClick={()=>setDocumentOpen(true)} key={i} className="rooms-sidebar-button">{document.title}</button>
-                      <p className="message-time">{new Date(document.lastModified).toLocaleString()}</p>
-                    </>
+                    documentOpen?
+                      <Document
+                        id={document.id}
+                        salaId={document.roomId}
+                        titulo={document.title}
+                        contenido={document.content}
+                        lastModified={document.lastModified}
+                        refreshDocuments={() => GetRoomDocuments(document.roomId)}
+                      />
+                    :
+                      <>
+                        <button onClick={()=>setDocumentOpen(true)} key={i} className="rooms-sidebar-button">{document.title}</button>
+                        <p className="message-time">{new Date(document.lastModified).toLocaleString()}</p>
+                      </>
                   ))}
                 </div>
               :

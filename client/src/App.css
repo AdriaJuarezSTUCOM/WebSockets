@@ -104,6 +104,11 @@ body {
   justify-content: space-between;
 }
 
+.chat-documents-title-row{
+  display: flex;
+  justify-content: space-between;
+}
+
 .chat-main h1, .chat-documents h1{
   font-size: 2rem;
   color: #333;
